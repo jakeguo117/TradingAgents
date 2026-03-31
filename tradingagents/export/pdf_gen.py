@@ -1,4 +1,4 @@
-"""PDF report generator using ReportLab."""
+"""PDF report generator using ReportLab — Sun Life brand style."""
 
 from pathlib import Path
 
@@ -7,6 +7,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
+    HRFlowable,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -18,11 +19,18 @@ from .gemini_client import generate_structured
 from .prompts import PDF_PROMPT
 from .schemas import PdfContent
 
+# Sun Life brand colors
+TEAL_DARK = colors.HexColor("#003946")
+GOLD = colors.HexColor("#FEBE10")
+BODY_COLOR = colors.HexColor("#222222")
+GRAY_TEXT = colors.HexColor("#5B5E5E")
+LIGHT_GRAY = colors.HexColor("#F5F5F5")
+
 
 def generate_pdf(
-    report_text: str, output_dir: Path, model: str = "gemini-2.0-flash"
+    report_text: str, output_dir: Path, model: str = "gemini-2.5-flash"
 ) -> Path:
-    """Generate a PDF report from a trading analysis report.
+    """Generate a Sun Life-styled PDF report from a trading analysis report.
 
     Args:
         report_text: The complete trading analysis report markdown.
@@ -52,85 +60,126 @@ def generate_pdf(
     )
 
     styles = getSampleStyleSheet()
+
+    # Sun Life-styled paragraph styles
     title_style = ParagraphStyle(
         "ReportTitle",
         parent=styles["Title"],
-        fontSize=22,
-        spaceAfter=6,
-        textColor=colors.HexColor("#1a1a2e"),
+        fontSize=24,
+        spaceAfter=4,
+        textColor=TEAL_DARK,
+        fontName="Helvetica-Bold",
     )
     subtitle_style = ParagraphStyle(
         "ReportSubtitle",
-        parent=styles["Heading2"],
-        fontSize=14,
-        textColor=colors.HexColor("#555555"),
-        spaceAfter=20,
+        parent=styles["Normal"],
+        fontSize=13,
+        textColor=GRAY_TEXT,
+        spaceAfter=6,
+        fontName="Helvetica",
     )
     heading_style = ParagraphStyle(
         "SectionHeading",
         parent=styles["Heading2"],
         fontSize=16,
-        spaceBefore=16,
+        spaceBefore=18,
         spaceAfter=8,
-        textColor=colors.HexColor("#1a1a2e"),
+        textColor=TEAL_DARK,
+        fontName="Helvetica-Bold",
     )
     body_style = ParagraphStyle(
         "ReportBody",
         parent=styles["BodyText"],
         fontSize=10,
-        leading=14,
+        leading=15,
         spaceAfter=8,
+        textColor=BODY_COLOR,
+        fontName="Helvetica",
+    )
+    summary_style = ParagraphStyle(
+        "Summary",
+        parent=body_style,
+        fontSize=11,
+        leading=16,
+        leftIndent=12,
+        borderLeftWidth=3,
+        borderLeftColor=GOLD,
+        borderPadding=8,
     )
     disclaimer_style = ParagraphStyle(
         "Disclaimer",
         parent=styles["BodyText"],
-        fontSize=8,
-        textColor=colors.grey,
-        spaceBefore=20,
+        fontSize=7.5,
+        textColor=GRAY_TEXT,
+        spaceBefore=24,
+        fontName="Helvetica",
     )
 
     story = []
 
-    # Title
+    # Gold accent bar at top
+    story.append(HRFlowable(
+        width="100%", thickness=4, color=GOLD,
+        spaceAfter=16, spaceBefore=0,
+    ))
+
+    # Title + subtitle
     story.append(Paragraph(content["title"], title_style))
     story.append(Paragraph(content["subtitle"], subtitle_style))
-    story.append(Spacer(1, 12))
+
+    # Teal divider
+    story.append(HRFlowable(
+        width="30%", thickness=2, color=TEAL_DARK,
+        spaceAfter=16, spaceBefore=8,
+    ))
 
     # Executive Summary
     story.append(Paragraph("Executive Summary", heading_style))
-    story.append(Paragraph(content["executive_summary"], body_style))
+    story.append(Paragraph(content["executive_summary"], summary_style))
     story.append(Spacer(1, 12))
 
     # Sections
     for section in content["sections"]:
         story.append(Paragraph(section["heading"], heading_style))
 
+        # Gold accent under section heading
+        story.append(HRFlowable(
+            width="15%", thickness=2, color=GOLD,
+            spaceAfter=8, spaceBefore=0,
+        ))
+
         # Clean body text for ReportLab (strip markdown)
         body = section["body"].replace("**", "").replace("*", "")
-        for paragraph in body.split("\n\n"):
-            paragraph = paragraph.strip()
-            if paragraph:
-                story.append(Paragraph(paragraph, body_style))
+        for paragraph_text in body.split("\n\n"):
+            paragraph_text = paragraph_text.strip()
+            if paragraph_text:
+                story.append(Paragraph(paragraph_text, body_style))
 
         # Add table if present
         if section.get("table_data"):
             table_data = section["table_data"]
             table = Table(table_data, hAlign="LEFT")
             table.setStyle(TableStyle([
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a1a2e")),
+                ("BACKGROUND", (0, 0), (-1, 0), TEAL_DARK),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                 ("FONTSIZE", (0, 0), (-1, -1), 9),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f5f5f5")]),
-                ("TOPPADDING", (0, 0), (-1, -1), 4),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#DDDDDD")),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, LIGHT_GRAY]),
+                ("TOPPADDING", (0, 0), (-1, -1), 5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
             ]))
             story.append(Spacer(1, 8))
             story.append(table)
 
         story.append(Spacer(1, 8))
 
-    # Disclaimer
+    # Bottom gold bar + disclaimer
+    story.append(HRFlowable(
+        width="100%", thickness=2, color=GOLD,
+        spaceAfter=8, spaceBefore=16,
+    ))
     story.append(Paragraph(content["disclaimer"], disclaimer_style))
 
     doc.build(story)

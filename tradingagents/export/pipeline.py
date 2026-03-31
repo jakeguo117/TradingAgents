@@ -65,7 +65,7 @@ def export_report(
         ExportResult dict with paths/data for each generated format.
     """
     config = config or {}
-    model = config.get("export_llm_model", "gemini-2.0-flash")
+    model = config.get("export_llm_model", "gemini-2.5-flash")
     tts_model = config.get("export_tts_model", "gemini-2.5-flash-preview-tts")
     audio_provider = config.get("export_audio_provider", "notebooklm")
 

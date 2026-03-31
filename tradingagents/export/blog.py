@@ -7,7 +7,7 @@ from .prompts import BLOG_PROMPT
 from .schemas import BlogContent
 
 
-def generate_blog(report_text: str, output_dir: Path, model: str = "gemini-2.0-flash") -> Path:
+def generate_blog(report_text: str, output_dir: Path, model: str = "gemini-2.5-flash") -> Path:
     """Generate a blog post from a trading analysis report.
 
     Args:

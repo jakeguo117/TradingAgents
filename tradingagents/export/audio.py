@@ -21,7 +21,7 @@ def _format_script_for_tts(script: AudioScript) -> str:
 def generate_audio_gemini(
     report_text: str,
     output_dir: Path,
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-2.5-flash",
     tts_model: str = "gemini-2.5-flash-preview-tts",
 ) -> Path:
     """Generate audio using Gemini (script generation + TTS).
@@ -99,7 +99,7 @@ def generate_audio(
     report_text: str,
     output_dir: Path,
     provider: str = "notebooklm",
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-2.5-flash",
     tts_model: str = "gemini-2.5-flash-preview-tts",
 ) -> Path:
     """Generate audio summary using the configured provider.

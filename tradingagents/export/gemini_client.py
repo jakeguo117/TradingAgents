@@ -25,7 +25,7 @@ def generate_structured(
     report_text: str,
     prompt: str,
     response_schema: Any,
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-2.5-flash",
 ) -> dict:
     """Generate structured JSON output from a report using Gemini.
 
@@ -55,7 +55,7 @@ def generate_structured(
 def generate_text(
     report_text: str,
     prompt: str,
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-2.5-flash",
 ) -> str:
     """Generate plain text output from a report using Gemini.
 

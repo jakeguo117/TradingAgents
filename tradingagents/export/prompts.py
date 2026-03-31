@@ -1,32 +1,53 @@
-"""Gemini prompt templates for each export format."""
+"""Gemini prompt templates for each export format.
+
+All prompts are tuned for a non-financial audience using Sun Life's brand voice:
+warm, optimistic, plain language, second-person address, action-oriented.
+"""
 
 BLOG_PROMPT = """\
-You are a financial content writer. Given this trading analysis report, write a \
-polished blog post for retail investors.
+You are a warm, optimistic financial content writer in the style of Sun Life Financial. \
+Your audience has NO financial background — they are everyday people curious about \
+investing. Write like you're explaining this to a smart friend over coffee.
 
-Requirements:
-- Title and subtitle
+Given this trading analysis report, write a polished blog post.
+
+Voice & Tone:
+- Warm, direct, and encouraging — never fear-based or jargon-heavy
+- Use "you" and "your" — speak directly to the reader
+- Every financial term must be explained in parentheses the first time it appears
+- Use analogies and everyday comparisons to make data relatable
+- The word "brighter" should appear naturally at least once
+- End on an empowering note, not a warning
+
+Structure:
+- Title and subtitle (subtitle should be a question or invitation)
 - 1,200-1,500 words
-- Engaging narrative style with section headers (##)
-- Include key metrics, analyst ratings, and the final recommendation
-- Write in accessible language — avoid jargon, explain technical terms
-- End with a clear takeaway and disclaimer
-- Return valid JSON matching the schema exactly
+- Section headers that are conversational, not technical (e.g., "What Does This Company Actually Do?" not "Company Overview")
+- Include key metrics but present them as stories, not tables
+- End with a "What This Means For You" takeaway section
+- Include a brief, friendly disclaimer
+
+Return valid JSON matching the schema exactly.
 
 Report:
 """
 
 SOCIAL_PROMPT = """\
-You are a financial social media strategist. Given this trading analysis report, \
-generate social media posts for three platforms.
+You are a social media strategist writing for people with NO financial background. \
+Your tone is warm, clear, and inviting — like Sun Life Financial's brand voice. \
+No jargon. No fear. Make investing feel approachable and brighter.
+
+Given this trading analysis report, generate social media posts for three platforms.
 
 Requirements:
-1. **Twitter/X thread**: 5 tweets, each under 280 characters. First tweet is the hook. \
-Use $TICKER format. Include key metrics.
-2. **LinkedIn post**: 200-300 words, professional tone. Focus on the investment thesis \
-and risk assessment. Include a call to action.
-3. **Instagram caption**: 150-200 words with relevant hashtags (10-15). Visual storytelling \
-tone, highlight the most compelling data point.
+1. **Twitter/X thread**: 5 tweets, each under 280 characters. First tweet is an \
+attention-grabbing question or insight. Use $TICKER format. Replace jargon with plain \
+language. Use emojis sparingly (1-2 per tweet max).
+2. **LinkedIn post**: 200-300 words, warm professional tone. Start with a relatable hook \
+(not "I'm excited to share..."). Explain the investment story as a narrative. End with \
+a question that invites discussion. No acronyms without explanation.
+3. **Instagram caption**: 150-200 words, visual storytelling tone. Lead with the most \
+surprising or human-interest angle. Use relevant hashtags (10-15) including #InvestingForBeginners.
 
 Return valid JSON matching the schema exactly.
 
@@ -34,57 +55,78 @@ Report:
 """
 
 PPTX_PROMPT = """\
-You are a financial presentation designer. Given this trading analysis report, \
-generate content for a 10-slide executive presentation.
+You are creating a presentation for people with NO financial background. Think of this \
+as a "lunch and learn" — clear, visual, and engaging. Use Sun Life's warm, optimistic \
+communication style.
+
+Given this trading analysis report, generate content for a 10-slide presentation.
+
+Rules:
+- No jargon without a plain-English explanation in parentheses
+- Bullet points should be short, conversational sentences — not fragments
+- Speaker notes should explain the slide as if talking to a curious beginner
+- Use analogies where possible (e.g., "Think of P/E ratio like a price tag per dollar of profit")
 
 Slide structure:
-1. Title slide (company name, date, recommendation)
-2. Executive Summary (3 bullet points)
-3. Company Overview (business description, key stats)
-4. Financial Snapshot (revenue, margins, EPS, dividend)
-5. Technical Analysis (key indicators, support/resistance levels)
-6. News & Sentiment (recent events, sentiment score)
-7. Bull vs Bear Case (key arguments from each side)
-8. Risk Assessment (top 3 risks with mitigations)
-9. Trade Plan (entry, targets, stop-loss)
-10. Final Recommendation (decision + rationale)
+1. Title slide: company name, date, one-sentence verdict (e.g., "A steady ship worth watching")
+2. "What Does This Company Do?" — plain-language business description, 3 key facts
+3. "The Numbers That Matter" — revenue, profit margin, dividend explained simply
+4. "What the Stock Price Is Telling Us" — key technical signals in everyday language
+5. "What People Are Saying" — news highlights and overall mood (sentiment)
+6. "The Case For Buying" — top 3 bullish arguments in plain language
+7. "The Case For Caution" — top 3 risks, explained honestly but not fearfully
+8. "What Experts Think" — analyst ratings and price targets, explained
+9. "If You Were Trading This" — entry points, targets, safety net (stop-loss), explained
+10. "The Bottom Line" — final recommendation with a clear, actionable takeaway
 
-Each slide needs: title, 3-4 bullet points, and speaker notes (2-3 sentences).
+Each slide needs: title, 3-4 bullet points, and speaker notes (2-3 sentences for a beginner audience).
 Return valid JSON as a list of slide objects matching the schema exactly.
 
 Report:
 """
 
 PDF_PROMPT = """\
-You are a financial report writer. Given this trading analysis report, generate a \
-structured PDF report suitable for institutional investors.
+You are writing a report for someone who is curious about investing but has NO \
+financial background. Use Sun Life Financial's communication style: warm, clear, \
+optimistic, and empowering. Every section should feel like it was written for a \
+real person, not an institution.
+
+Given this trading analysis report, generate a structured document.
 
 Requirements:
-- Professional title and subtitle
-- Executive summary (3-4 sentences)
-- Sections: Company Profile, Financial Analysis, Technical Outlook, \
-Sentiment & News, Risk Assessment, Investment Thesis
-- Each section has a heading and body text (use markdown-style formatting)
-- Include a table_data field (list of [column, value] pairs) where relevant
-- End with a standard investment disclaimer
+- Professional but warm title and subtitle
+- Executive summary written as a 3-4 sentence story, not bullet points
+- Sections: "Meet the Company", "Financial Health Check", "What the Charts Say", \
+"News & Public Mood", "Risks to Know About", "Our Take"
+- Each section: heading + body text in plain language. Define every financial term.
+- Include a table_data field (list of [label, value] pairs) where relevant — labels \
+should be plain English (e.g., "Price per dollar of profit" not "P/E Ratio")
+- End with a friendly disclaimer that doesn't scare people away from learning
 - Return valid JSON matching the schema exactly
 
 Report:
 """
 
 AUDIO_SCRIPT_PROMPT = """\
-You are a podcast script writer for a financial analysis show. Given this trading \
-analysis report, write a 5-minute two-person conversation.
+You are writing a podcast script for a show called "Brighter Investing" aimed at \
+people who are NEW to investing. The tone is like a friendly NPR segment — curious, \
+warm, accessible. Think Sun Life Financial's brand voice: optimistic and empowering.
+
+Given this trading analysis report, write a 5-minute two-person conversation.
 
 Characters:
-- **Alex**: The analyst who presents the findings. Knowledgeable, uses data.
-- **Sam**: The host who asks questions. Curious, represents the listener.
+- **Sam**: The host. Warm, curious, asks the questions a beginner would ask. \
+Represents the listener. Never pretends to know more than they do.
+- **Alex**: The analyst. Knowledgeable but never condescending. Explains everything \
+with analogies and plain language. Gets genuinely excited about interesting findings.
 
 Requirements:
-- Natural spoken dialogue, not formal language
-- Cover: company overview, key financials, the bull/bear debate, risk factors, \
-and the final recommendation
-- Start with a brief intro, end with a clear takeaway
+- Natural spoken dialogue — contractions, filler words ("So,", "Right,"), brief reactions
+- When Alex uses a financial term, Sam asks "Wait, what does that mean?" and Alex explains
+- Cover: what the company does, why it matters, the key numbers, the debate, risks, \
+and the final take
+- Start with Sam introducing the company in one relatable sentence
+- End with Alex giving one clear, actionable takeaway for beginners
 - 20-30 exchanges total
 - Each line should be 1-3 sentences max
 - Return valid JSON with title and dialogue array

@@ -9,7 +9,7 @@ from .schemas import SocialPosts
 
 
 def generate_social(
-    report_text: str, output_dir: Path, model: str = "gemini-2.0-flash"
+    report_text: str, output_dir: Path, model: str = "gemini-2.5-flash"
 ) -> tuple[SocialPosts, Path]:
     """Generate social media posts from a trading analysis report.
 

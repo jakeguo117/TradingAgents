@@ -61,6 +61,7 @@ class TradingAgentsGraph:
         self.debug = debug
         self.config = config or DEFAULT_CONFIG
         self.callbacks = callbacks or []
+        self.last_state = None  # Stores final state after propagate()
 
         # Update the interface's config
         set_config(self.config)
@@ -217,8 +218,9 @@ class TradingAgentsGraph:
             # Standard mode without tracing
             final_state = self.graph.invoke(init_agent_state, **args)
 
-        # Store current state for reflection
+        # Store current state for reflection and export access
         self.curr_state = final_state
+        self.last_state = final_state
 
         # Log state
         self._log_state(trade_date, final_state)

@@ -1198,6 +1198,61 @@ def run_analysis():
     if display_choice in ("Y", "YES", ""):
         display_complete_report(final_state)
 
+    # Prompt to export to media formats
+    export_choice = typer.prompt(
+        "\nExport to media formats (blog, pptx, pdf, social, audio)?",
+        default="N",
+    ).strip().upper()
+    if export_choice in ("Y", "YES"):
+        _run_export_flow(final_state, selections, console)
+
+
+def _run_export_flow(final_state: dict, selections: dict, console: Console):
+    """Interactive export flow — lets user pick formats and runs the pipeline."""
+    import questionary
+
+    available_formats = [
+        questionary.Choice("Blog post (.md)", value="blog"),
+        questionary.Choice("PowerPoint (.pptx)", value="pptx"),
+        questionary.Choice("PDF report (.pdf)", value="pdf"),
+        questionary.Choice("Social media posts (X, LinkedIn, Instagram)", value="social"),
+        questionary.Choice("Audio summary (.wav)", value="audio"),
+    ]
+
+    selected = questionary.checkbox(
+        "Select export formats:",
+        choices=available_formats,
+    ).ask()
+
+    if not selected:
+        console.print("[dim]No formats selected. Skipping export.[/dim]")
+        return
+
+    console.print(f"\n[bold cyan]Exporting {len(selected)} format(s)...[/bold cyan]")
+
+    from tradingagents.export import export_report
+
+    ticker = selections["ticker"]
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_dir = Path.cwd() / "exports" / f"{ticker}_{timestamp}"
+
+    try:
+        results = export_report(
+            final_state=final_state,
+            ticker=ticker,
+            formats=selected,
+            output_dir=output_dir,
+        )
+
+        console.print(f"\n[green]✓ Exports saved to:[/green] {output_dir.resolve()}\n")
+        for fmt, value in results.items():
+            if isinstance(value, Path):
+                console.print(f"  [dim]{fmt}:[/dim] {value.name}")
+            elif fmt == "social":
+                console.print(f"  [dim]{fmt}:[/dim] social_posts.json + social_posts.md")
+    except Exception as e:
+        console.print(f"[red]Export error: {e}[/red]")
+
 
 @app.command()
 def analyze():

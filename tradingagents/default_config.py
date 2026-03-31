@@ -35,4 +35,10 @@ DEFAULT_CONFIG = {
     "tool_vendors": {
         # Example: "get_stock_data": "alpha_vantage",  # Override category default
     },
+    # Export pipeline settings
+    "export_formats": [],  # e.g., ["blog", "pptx", "pdf", "social", "audio"]
+    "export_dir": os.getenv("TRADINGAGENTS_EXPORT_DIR", "./exports"),
+    "export_llm_model": "gemini-2.5-flash",
+    "export_tts_model": "gemini-2.5-flash-preview-tts",
+    "export_audio_provider": "gemini_tts",  # "notebooklm" or "gemini_tts"
 }

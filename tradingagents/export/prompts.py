@@ -2,7 +2,38 @@
 
 All prompts are tuned for a non-financial audience using Sun Life's brand voice:
 warm, optimistic, plain language, second-person address, action-oriented.
+
+Language is controlled via LANGUAGE_INSTRUCTION prefix, set by the pipeline
+based on the export_language config key.
 """
+
+# Prepended to every prompt when a non-English language is configured.
+# Use get_language_instruction() to generate this.
+LANGUAGE_INSTRUCTION_TEMPLATE = """\
+CRITICAL INSTRUCTION: You MUST write ALL output text in {language}. \
+Every field in the JSON response — titles, subtitles, body text, bullet points, \
+speaker notes, tags, hashtags, dialogue — must be in {language}. \
+Do NOT use English except for proper nouns (company names, ticker symbols like $SLF), \
+standard financial abbreviations, and hashtags that are commonly used in English. \
+Keep numbers and dates in standard format.\n\n"""
+
+LANGUAGE_NAMES = {
+    "zh-CN": "简体中文 (Simplified Chinese / Mandarin)",
+    "zh-TW": "繁體中文 (Traditional Chinese)",
+    "ja": "日本語 (Japanese)",
+    "ko": "한국어 (Korean)",
+    "es": "Español (Spanish)",
+    "fr": "Français (French)",
+    "en": "",  # No prefix needed
+}
+
+
+def get_language_instruction(language_code: str) -> str:
+    """Return the language instruction prefix for a given language code."""
+    if language_code == "en" or not language_code:
+        return ""
+    lang_name = LANGUAGE_NAMES.get(language_code, language_code)
+    return LANGUAGE_INSTRUCTION_TEMPLATE.format(language=lang_name)
 
 BLOG_PROMPT = """\
 You are a warm, optimistic financial content writer in the style of Sun Life Financial. \

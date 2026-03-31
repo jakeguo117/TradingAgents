@@ -41,4 +41,5 @@ DEFAULT_CONFIG = {
     "export_llm_model": "gemini-2.5-flash",
     "export_tts_model": "gemini-2.5-flash-preview-tts",
     "export_audio_provider": "gemini_tts",  # "notebooklm" or "gemini_tts"
+    "export_language": "en",  # "en", "zh-CN", "zh-TW", "ja", "ko", "es", "fr"
 }

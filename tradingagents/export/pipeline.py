@@ -68,6 +68,7 @@ def export_report(
     model = config.get("export_llm_model", "gemini-2.5-flash")
     tts_model = config.get("export_tts_model", "gemini-2.5-flash-preview-tts")
     audio_provider = config.get("export_audio_provider", "notebooklm")
+    language = config.get("export_language", "en")
 
     if output_dir is None:
         base = config.get("export_dir", "./exports")
@@ -78,6 +79,12 @@ def export_report(
 
     # Build consolidated report text from agent state
     report_text = _build_report_text(final_state, ticker)
+
+    # Prepend language instruction if non-English
+    from .prompts import get_language_instruction
+    lang_prefix = get_language_instruction(language)
+    if lang_prefix:
+        report_text = lang_prefix + report_text
 
     # Save the source report
     (output_dir / "source_report.md").write_text(report_text)
